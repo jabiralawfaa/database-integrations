@@ -2,19 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class MahasiswaController extends Controller
 {
-    public function insertData()
+    public function insertData(Request $request)
     {
-        DB::table('mahasiwas')->insert([
-            'nama' => 'Marisa Humairoh',
-            'nim' => '11223344',
-            'jurusan' => 'Pertanian',
-            'created_at' => now(),
-            'updated_at' => now(),
+        $request->validate([
+            'nama' => 'required',
+            'email' => 'required|email',
+            'nim' => 'required|unique:mahasiswas',
+            'jurusan' => 'required',
+        ]);
+
+        Mahasiswa::create([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'nim' => $request->nim,
+            'jurusan' => $request->jurusan,
         ]);
 
         return "Data berhasil ditambahkan!";
@@ -22,7 +28,7 @@ class MahasiswaController extends Controller
 
     public function getData()
     {
-        $mahasiswa = DB::table('mahasiwas')->get();
-        return response()->json($mahasiswa);
+        $mahasiswas = Mahasiswa::all();
+        return view('mahasiswa.index', ['mahasiswas' => $mahasiswas]);
     }
 }
